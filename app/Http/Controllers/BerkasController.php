@@ -54,7 +54,7 @@ class BerkasController extends Controller
             'sub_kategori_id' => 'required|exists:sub_kategori_berkas,id',
             'nomor_surat'     => 'nullable|string|max:255',
             'tahun'           => 'required|numeric|min:2000|max:2100',
-            'file'            => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png|max:10240',
+            'file'            => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png|max:50240',
             'keterangan'      => 'nullable|string',
         ]);
 
@@ -93,7 +93,7 @@ class BerkasController extends Controller
             'sub_kategori_id' => 'required|exists:sub_kategori_berkas,id',
             'nomor_surat'     => 'nullable|string|max:255',
             'tahun'           => 'required|numeric|min:2000|max:2100',
-            'file'            => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png|max:10240',
+            'file'            => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png|max:50240',
             'keterangan'      => 'nullable|string',
         ]);
 

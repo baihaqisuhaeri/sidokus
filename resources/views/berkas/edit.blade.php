@@ -135,7 +135,7 @@
                                accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"
                                @change="fileName = $event.target.files[0]?.name || ''">
                         <p class="text-sm text-gray-500 group-hover:text-red-500 transition" x-text="fileName || 'Klik untuk ganti file'"></p>
-                        <p class="text-xs text-gray-400">PDF, DOC, DOCX, XLS, XLSX, JPG, PNG — Maks. 10MB</p>
+                        <p class="text-xs text-gray-400">PDF, DOC, DOCX, XLS, XLSX, JPG, PNG — Maks. 50MB</p>
                     </label>
                 </div>
 

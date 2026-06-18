@@ -129,6 +129,8 @@
                             <td class="px-5 py-4 text-gray-600 font-medium">{{ $item->tahun }}</td>
                             <td class="px-5 py-4">
                                 <div class="flex items-center gap-2">
+                                    <a href="{{ route('berkas.preview', $item) }}" target="_blank"
+                                       class="px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-600 rounded-lg text-xs font-medium transition">Preview</a>
                                     <a href="{{ route('berkas.download', $item) }}"
                                        class="px-3 py-1.5 bg-green-50 hover:bg-green-100 text-green-600 rounded-lg text-xs font-medium transition">Download</a>
                                     <a href="{{ route('berkas.edit', $item) }}"

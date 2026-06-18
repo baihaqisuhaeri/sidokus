@@ -14,23 +14,15 @@ class BerkasController extends Controller
     {
         $query = Berkas::with('subKategori.kategori', 'user');
 
-        // if ($request->filled('search')) {
-        //     $query->where(function ($q) use ($request) {
-        //         $q->where('judul', 'like', '%' . $request->search . '%')
-        //             ->orWhere('nomor_surat', 'like', '%' . $request->search . '%');
-        //     });
-        // }
-
         if ($request->filled('search')) {
-            $search = strtolower($request->search);
-            $query->where(function ($q) use ($search) {
-                $q->whereRaw('LOWER(judul) LIKE ?', ["%{$search}%"])
-                    ->orWhereRaw('LOWER(nomor_surat) LIKE ?', ["%{$search}%"]);
+            $query->where(function($q) use ($request) {
+                $q->where('judul', 'like', '%' . $request->search . '%')
+                  ->orWhere('nomor_surat', 'like', '%' . $request->search . '%');
             });
         }
 
         if ($request->filled('kategori_id')) {
-            $query->whereHas('subKategori', function ($q) use ($request) {
+            $query->whereHas('subKategori', function($q) use ($request) {
                 $q->where('kategori_id', $request->kategori_id);
             });
         }
@@ -62,7 +54,7 @@ class BerkasController extends Controller
             'sub_kategori_id' => 'required|exists:sub_kategori_berkas,id',
             'nomor_surat'     => 'nullable|string|max:255',
             'tahun'           => 'required|numeric|min:2000|max:2100',
-            'file'            => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png|max:50240',
+            'file'            => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png|max:10240',
             'keterangan'      => 'nullable|string',
         ]);
 
@@ -79,7 +71,7 @@ class BerkasController extends Controller
         ]);
 
         return redirect()->route('berkas.index')
-            ->with('success', 'Berkas berhasil ditambahkan.');
+                         ->with('success', 'Berkas berhasil ditambahkan.');
     }
 
     public function show(Berkas $berka)
@@ -101,7 +93,7 @@ class BerkasController extends Controller
             'sub_kategori_id' => 'required|exists:sub_kategori_berkas,id',
             'nomor_surat'     => 'nullable|string|max:255',
             'tahun'           => 'required|numeric|min:2000|max:2100',
-            'file'            => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png|max:50240',
+            'file'            => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png|max:10240',
             'keterangan'      => 'nullable|string',
         ]);
 
@@ -123,7 +115,7 @@ class BerkasController extends Controller
         $berka->update($data);
 
         return redirect()->route('berkas.index')
-            ->with('success', 'Berkas berhasil diperbarui.');
+                         ->with('success', 'Berkas berhasil diperbarui.');
     }
 
     public function destroy(Berkas $berka)
@@ -134,7 +126,7 @@ class BerkasController extends Controller
         $berka->delete();
 
         return redirect()->route('berkas.index')
-            ->with('success', 'Berkas berhasil dihapus.');
+                         ->with('success', 'Berkas berhasil dihapus.');
     }
 
     public function download(Berkas $berka)
@@ -146,6 +138,27 @@ class BerkasController extends Controller
             $berka->file,
             $berka->judul . '.' . $berka->extension
         );
+    }
+
+    public function preview(Berkas $berka)
+    {
+        if (!Storage::disk('public')->exists($berka->file)) {
+            abort(404, 'File tidak ditemukan');
+        }
+
+        $path = Storage::disk('public')->path($berka->file);
+        $mime = match($berka->extension) {
+            'pdf' => 'application/pdf',
+            'jpg', 'jpeg' => 'image/jpeg',
+            'png' => 'image/png',
+            'gif' => 'image/gif',
+            default => 'application/octet-stream',
+        };
+
+        return response()->file($path, [
+            'Content-Type' => $mime,
+            'Content-Disposition' => 'inline; filename="' . $berka->judul . '.' . $berka->extension . '"',
+        ]);
     }
 
     // API untuk get sub kategori by kategori (untuk dropdown dinamis)

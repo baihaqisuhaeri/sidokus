@@ -38,6 +38,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('berkas', BerkasController::class);
     Route::get('/berkas/{berka}/download', [BerkasController::class, 'download'])
         ->name('berkas.download');
+    Route::get('/berkas/{berka}/preview', [BerkasController::class, 'preview'])
+    ->name('berkas.preview');
 
     // Admin only
     Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {

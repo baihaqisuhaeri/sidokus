@@ -15,11 +15,12 @@ class BerkasController extends Controller
         $query = Berkas::with('subKategori.kategori', 'user');
 
         if ($request->filled('search')) {
-            $query->where(function($q) use ($request) {
-                $q->where('judul', 'like', '%' . $request->search . '%')
-                  ->orWhere('nomor_surat', 'like', '%' . $request->search . '%');
-            });
-        }
+    $search = strtolower($request->search);
+    $query->where(function($q) use ($search) {
+        $q->whereRaw('LOWER(judul) LIKE ?', ["%{$search}%"])
+          ->orWhereRaw('LOWER(nomor_surat) LIKE ?', ["%{$search}%"]);
+    });
+}
 
         if ($request->filled('kategori_id')) {
             $query->whereHas('subKategori', function($q) use ($request) {

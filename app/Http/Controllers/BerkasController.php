@@ -14,15 +14,23 @@ class BerkasController extends Controller
     {
         $query = Berkas::with('subKategori.kategori', 'user');
 
+        // if ($request->filled('search')) {
+        //     $query->where(function ($q) use ($request) {
+        //         $q->where('judul', 'like', '%' . $request->search . '%')
+        //             ->orWhere('nomor_surat', 'like', '%' . $request->search . '%');
+        //     });
+        // }
+
         if ($request->filled('search')) {
-            $query->where(function($q) use ($request) {
-                $q->where('judul', 'like', '%' . $request->search . '%')
-                  ->orWhere('nomor_surat', 'like', '%' . $request->search . '%');
+            $search = strtolower($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->whereRaw('LOWER(judul) LIKE ?', ["%{$search}%"])
+                    ->orWhereRaw('LOWER(nomor_surat) LIKE ?', ["%{$search}%"]);
             });
         }
 
         if ($request->filled('kategori_id')) {
-            $query->whereHas('subKategori', function($q) use ($request) {
+            $query->whereHas('subKategori', function ($q) use ($request) {
                 $q->where('kategori_id', $request->kategori_id);
             });
         }
@@ -71,7 +79,7 @@ class BerkasController extends Controller
         ]);
 
         return redirect()->route('berkas.index')
-                         ->with('success', 'Berkas berhasil ditambahkan.');
+            ->with('success', 'Berkas berhasil ditambahkan.');
     }
 
     public function show(Berkas $berka)
@@ -115,7 +123,7 @@ class BerkasController extends Controller
         $berka->update($data);
 
         return redirect()->route('berkas.index')
-                         ->with('success', 'Berkas berhasil diperbarui.');
+            ->with('success', 'Berkas berhasil diperbarui.');
     }
 
     public function destroy(Berkas $berka)
@@ -126,7 +134,7 @@ class BerkasController extends Controller
         $berka->delete();
 
         return redirect()->route('berkas.index')
-                         ->with('success', 'Berkas berhasil dihapus.');
+            ->with('success', 'Berkas berhasil dihapus.');
     }
 
     public function download(Berkas $berka)
